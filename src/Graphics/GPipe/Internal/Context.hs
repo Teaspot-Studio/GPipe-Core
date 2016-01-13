@@ -50,6 +50,9 @@ import Control.Monad.Trans.Error
 import Control.Exception (throwIO)
 import Control.Monad.Trans.State.Strict
 
+import Control.Monad.Fix 
+import Control.Monad.Catch (MonadThrow, MonadCatch, MonadMask)
+
 type ContextFactory c ds w = ContextFormat c ds -> IO (ContextHandle w)
 
 data ContextHandle w = ContextHandle {
@@ -91,7 +94,7 @@ data ContextHandle w = ContextHandle {
 --
 newtype ContextT w os f m a =
     ContextT (ReaderT (ContextHandle w, (ContextData, SharedContextDatas)) m a)
-    deriving (Functor, Applicative, Monad, MonadIO, MonadException, MonadAsyncException)
+    deriving (Functor, Applicative, Monad, MonadIO, MonadException, MonadAsyncException, MonadFix, MonadCatch, MonadThrow, MonadMask)
 
 instance MonadTrans (ContextT w os f) where
     lift = ContextT . lift
